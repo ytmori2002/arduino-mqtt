@@ -1,0 +1,67 @@
+//Using gsangoh for MQTT Brocker
+
+#include <SPI.h>
+#include <PubSubClient.h>
+#include <Ethernet.h>
+
+
+#define Topic g******@github/test"  //******* is account ID name 
+byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x31, 0xB8 };
+
+const int  SENSOR = 0;
+int val = 0;
+
+const int LED = 9; // LED‚ÍƒfƒWƒ^ƒ‹pin9‚ÉÚ‘±
+
+EthernetClient ethClient;
+PubSubClient client ("lite.mqtt.shiguredo.jp", 1883, ethClient);
+
+void setup(){
+  Serial.begin(9600);
+  if(Ethernet.begin(mac) == 0){
+    Serial.println("Failed to configure Ethernet using DHCP");
+    return;
+  }
+  pinMode(LED,OUTPUT);
+}
+
+void loop(){
+    val = analogRead(SENSOR);
+ Serial.print(val);
+ Serial.println("");
+ 
+  if (val > 800){
+    digitalWrite(LED,LOW); 
+//A magic-number is 800 for my environment
+} else {
+   digitalWrite(LED,HIGH);
+}
+
+char strBuf[10];    //publish‚·‚é‚½‚ß‚É•Ï”val‚ğ•¶š—ñ‚ÖŠi”[
+sprintf(strBuf, "%d", val);
+
+ if(!client.connected())
+ {
+ client.connect("lightsensor", g*******@github", g@@@@@@@@@h);
+//****is your account.@@@@ is your topicfs password, it isft login password for sangofs dashboard.
+// client.publish(Topic, strBuf);
+//For debug(debug‚É•¶š—ñ‚ğpublish)
+ client.publish(Topic, "HEY!HEY!HEY!");
+ client.subscribe(Topic);
+ }
+  
+if(client.connected())
+ {
+ client.connect("lightsensor", g******@github", g@@@@@@@@@g);
+ client.publish(Topic, strBuf);
+// client.publish(Topic, "HEY!HEY!HEY!");
+//For debug(debug‚É•¶š—ñ‚ğpublish)
+ client.subscribe(Topic);
+ }
+
+
+
+delay(10000);
+
+
+}
